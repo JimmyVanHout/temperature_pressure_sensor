@@ -54,18 +54,29 @@ For example, using $`t_r = 1 \times 10^{-6}\text{s}`$, $`c = 50 \times 10^{-12}\
 
 `esp-idf` is required to build the program, upload it to the ESP32, and monitor the serial output. For information on installing `esp-idf`, see the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/).
 
-### Building, Uploading, and Monitoring the Program
+### Program Installation
 
-For more information on building, uploading, and monitoring the program using `esp-idf`, see the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/).
-
-To install the temperature and pressure sensor program:
-
-1. Clone the repository from GitHub and change into the `temperature_pressure_sensor` directory:
+To install the temperature and pressure sensor program, clone the repository from GitHub:
 
     ```bash
     git clone git@github.com:JimmyVanHout/temperature_pressure_sensor.git
-    cd temperature_pressure_sensor
     ```
+
+The program will be located in the `temperature_pressure_sensor` directory.
+
+## Building, Uploading, and Monitoring the Program
+
+For more information on building, uploading, and monitoring the program using `esp-idf`, see the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/).
+
+To build, upload, and monitor the program:
+
+1. Change to the program directory:
+
+    ```bash
+    cd <program_directory_path>
+    ```
+
+    where `<program_directory_path>` is the path to the program directory, `temperature_pressure_sensor`.
 
 1. Build the program:
 
