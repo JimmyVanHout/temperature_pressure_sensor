@@ -28,21 +28,25 @@ The `utility` directory contains a Python module `calculate_pull_up_resistance` 
 
 The minimum pull-up resistance is:
 
-$$R_{min} = \dfrac{V_{CC} - V_{OL\_max}}{I_{OL}}$$
+```math
+R_{min} = \dfrac{V_{CC} - V_{OL\_max}}{I_{OL}}
+```
 
-where $R_{min}$ is the minimum pull-up resistance (&#x03a9;), $V_{CC}$ is the power supply voltage (V), $V_{OL\_max}$ is the maximum low-level output voltage (V), and $I_{OL}$ is the low-level output (sink) current.
+where $`R_{min}`$ is the minimum pull-up resistance (&#x03a9;), $`V_{CC}`$ is the power supply voltage (V), $`V_{OL\_max}`$ is the maximum low-level output voltage (V), and $`I_{OL}`$ is the low-level output (sink) current.
 
-For example, using $V_{CC} = 3.3\text{V}$, $V_{OL\_max} = 0.1 \times 3.3\text{V} = 0.33\text{V}$, and $I_{OL} = 0.028\text{A}$, $R_{min} = 106\Omega$.
+For example, using $`V_{CC} = 3.3\text{V}`$, $`V_{OL\_max} = 0.1 \times 3.3\text{V} = 0.33\text{V}`$, and $`I_{OL} = 0.028\text{A}`$, $`R_{min} = 106\Omega`$.
 
 #### Maximum Pull-Up Resistance Calculation
 
 The maximum pull-up resistance is:
 
-$$R_{max} = \dfrac{t_r}{c \times \ln\left(\dfrac{V_{CC} - V_{IL\_max}}{V_{CC} - V_{IH\_min}}\right)}$$
+```math
+R_{max} = \dfrac{t_r}{c \times \ln\left(\dfrac{V_{CC} - V_{IL\_max}}{V_{CC} - V_{IH\_min}}\right)}
+```
 
-where $R_{max}$ is the maximum pull-up resistance (&#x03a9;), $t_r$ is the I2C rise time from maximum low-level input voltage to minimum high-level input voltage (s), $c$ is the bus capacitace for each I2C line (F), $V_{CC}$ is the power supply voltage (V), $V_{IL\_max}$ is the maximum low-level input voltage (V), and $V_{IH\_min}$ is the minimum high-level input voltage (V).
+where $`R_{max}`$ is the maximum pull-up resistance (&#x03a9;), $`t_r`$ is the I2C rise time from maximum low-level input voltage to minimum high-level input voltage (s), $`c`$ is the bus capacitace for each I2C line (F), $`V_{CC}`$ is the power supply voltage (V), $`V_{IL\_max}`$ is the maximum low-level input voltage (V), and $`V_{IH\_min}`$ is the minimum high-level input voltage (V).
 
-For example, using $t_r = 1 \times 10^{-6}\text{s}$, $c = 50 \times 10^{-12}\text{F}$, $V_{CC} = 3.3\text{V}$, $V_{IL\_max} = 0.25 \times 3.3\text{V} = 0.825\text{V}$, and $V_{IH\_min} = 0.75 \times 3.3\text{V} = 2.5\text{V}$, $R_{max} = 18k\Omega$.
+For example, using $`t_r = 1 \times 10^{-6}\text{s}`$, $`c = 50 \times 10^{-12}\text{F}`$, $`V_{CC} = 3.3\text{V}`$, $`V_{IL\_max} = 0.25 \times 3.3\text{V} = 0.825\text{V}`$, and $`V_{IH\_min} = 0.75 \times 3.3\text{V} = 2.5\text{V}`$, $`R_{max} = 18\text{k}\Omega`$.
 
 ## Software Installation
 
