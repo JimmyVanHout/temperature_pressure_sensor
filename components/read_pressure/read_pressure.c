@@ -364,7 +364,7 @@ void calc_compensated_temperature_and_pressure(uint16_t *calibration_coefficient
             offi = 30 * pow(compensated_temperature - 2000, 2) / (double) 0x100;
             sensi = 0;
         } else {
-            ti = 14 * pow(temp_diff, 2) / 0x800000000;
+            ti = 14 * pow(temp_diff, 2) / (double) 0x800000000;
             offi = 35 * pow(compensated_temperature - 2000, 2) / (double) 0x8;
             sensi = 63 * pow(compensated_temperature - 2000, 2) / (double) 0x20;
         }
