@@ -84,7 +84,7 @@ To build, upload, and monitor the program:
     idf.py build
     ```
 
-    > **Note:** If you receive an error `error: "LOG_LOCAL_LEVEL" redefined [-Werror]`, you will need to disable errors for default warnings by running `idf.py menuconfig` and selecting `Compiler options->Disable errors for default warnings`. This appears to be a [bug](https://github.com/espressif/esp-idf/issues/17877) in `esp-idf`.
+    > **Note:** If you receive an error `error: "LOG_LOCAL_LEVEL" redefined [-Werror]`, you will need to either disable errors for default warnings by running `idf.py menuconfig` and selecting `Compiler options->Disable errors for default warnings` or disable I2C debug logs by running `idf.py menuconfig` and deselecting `Component config->ESP-Driver:I2C Configurations->Enable I2C debug log`. This appears to be a [bug](https://github.com/espressif/esp-idf/issues/17877) in `esp-idf`. After saving the configuration, run `idf.py build` again.
 
 1. Upload the program to the ESP32:
 
