@@ -54,19 +54,66 @@ For example, using $`t_r = 1 \times 10^{-6}\text{s}`$, $`c = 50 \times 10^{-12}\
 
 `esp-idf` is required to build the program, upload it to the ESP32, and monitor the serial output. For information on installing `esp-idf`, see the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/).
 
-### Program Installation
+### Temperature and Pressure Program Installation
 
-To install the temperature and pressure sensor program, clone the repository from GitHub:
+To install the temperature and pressure sensor program and related files, clone the repository from GitHub:
 
     ```bash
     git clone git@github.com:JimmyVanHout/temperature_pressure_sensor.git
     ```
 
-The program will be located in the `temperature_pressure_sensor` directory.
+The program and related files will be located in the `temperature_pressure_sensor` directory. Some of the files within this directory include the following:
+
+```
+CMakeLists
+    root
+        CMakeLists.txt
+    main
+        CMakeLists.txt
+    read_temperature_pressure
+        CMakeLists.txt
+main
+    main.c
+temperature_pressure_sensor
+    read_temperature_pressure.h
+    read_temperature_pressure.c
+```
+
+## Formatting the Project Structure for esp-idf
+
+To format the project structure required for `esp-idf`, run the `format.py` Python utility located in the `utility` directory:
+
+```bash
+python utility/format.py
+```
+
+The `format.py` program will create a new subdirectory `temperature_pressure_sensor` within the project directory (which is also named `temperature_pressure_sensor`) containing the proper project structure required by `esp-idf`. For example, the default file structure within the newly created `temperature_pressure_sensor` subdirectory after running `format.py` is:
+
+```
+CMakeLists.txt                              # copied from CMakeLists/root/CMakeLists.txt
+
+components
+    read_temperature_pressure
+        CMakeLists.txt                      # copied from CMakeLists/read_temperature_pressure/CMakeLists.txt
+        read_temperature_pressure.c         # copied from read_temperature_pressure/read_temperature_pressure.c
+        include
+            read_temperature_pressure.h     # copied from read_temperature_pressure/read_temperature_pressure.h
+main
+    CMakeLists.txt                          # copied from CMakeLists/root/CMakeLists.txt
+    main.c                                  # copied from main/main.c
+```
+
+The `format.py` program takes the following command-line options:
+
+`-d <path_to_directory>` or `--dir <path_to_directory>`: Specify the location of the project directory (by default named `temperature_pressure_sensor` when cloned from GitHub), where `<path_to_directory>` is the path to the project directory. If `-d` or `--dir` is not specified, then the current directory is assumed to be the project directory, unless the program is run from within the `utility` subdirectory in which case the `format.py` program will change to the parent (the project directory) automatically for convenience. The `-d` or `--dir` options are useful for running the `format.py` command from another directory outside of the project directory.
+
+`-c` or `--component-only`: Only create the `read_temperature_pressure` component and the necessary `CMakeLists.txt` files, do not create `main`, `main/main.c`, or `main/CMakeLists.txt`. This is useful for incorporating the `read_temperature_pressure` component into an existing project. The `-c` and `--component-only` options cannot be used with the `-m` or `--main` options.
+
+`-m <path_to_main>` or `--main <path_to_main>`: Specify the location of the main source file to be compiled and executed. The default is `main/main.c`. This is useful for building, uploading, and monitoring unit tests. For example, the `-m` or `--main` flag can be used to copy a unit test file `tests/main/test_main.c` to `main` so that it will be compiled and executed as the main executable on the ESP32 after the build and upload process. The `-m` and `--main` options cannot be used with the `-c` or `--component-only` options.
 
 ## Building, Uploading, and Monitoring the Program
 
-For more information on building, uploading, and monitoring the program using `esp-idf`, see the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/).
+For further information on building, uploading, and monitoring the program using `esp-idf`, see the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/).
 
 To build, upload, and monitor the program:
 
@@ -76,7 +123,7 @@ To build, upload, and monitor the program:
     cd <program_directory_path>
     ```
 
-    where `<program_directory_path>` is the path to the program directory, `temperature_pressure_sensor`.
+    where `<program_directory_path>` is the path to the program subdirectory, `temperature_pressure_sensor`, that was created by running `python format.py`.
 
 1. Build the program:
 
