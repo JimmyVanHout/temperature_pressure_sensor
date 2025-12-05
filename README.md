@@ -74,7 +74,7 @@ CMakeLists
         CMakeLists.txt
 main
     main.c
-temperature_pressure_sensor
+read_temperature_pressure
     read_temperature_pressure.h
     read_temperature_pressure.c
 ```
