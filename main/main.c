@@ -11,7 +11,6 @@ void app_main(void) {
     while (true) {
         read_uncompensated_temperature_and_pressure(i2c_controller_handle, uncompensated_temperature_and_pressure); /* read uncompensated temperature and pressure */
         calc_compensated_temperature_and_pressure(calibration_coefficients, uncompensated_temperature_and_pressure[0], uncompensated_temperature_and_pressure[1], compensated_temperature_and_pressure); /* calculate the compensated temperature and pressure */
-        printf("Compensated temperature (degrees C): %lf\n", compensated_temperature_and_pressure[0]);
-        printf("Compensated pressure (mbar): %lf\n", compensated_temperature_and_pressure[1]);
+        printf("compensated temperature (degrees C), compensated pressure (mbar): %lf, %lf\n", compensated_temperature_and_pressure[0], compensated_temperature_and_pressure[1]);
     }
 }
