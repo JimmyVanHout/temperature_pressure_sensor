@@ -84,7 +84,7 @@ read_temperature_pressure
 To format the project structure required for `esp-idf`, run the `format.py` Python utility located in the `utility` directory:
 
 ```bash
-python utility/format.py
+python3 utility/format.py
 ```
 
 The `format.py` program will create a new subdirectory `temperature_pressure_sensor` within the project directory (which is also named `temperature_pressure_sensor`) containing the proper project structure required by `esp-idf`. For example, the default file structure within the newly created `temperature_pressure_sensor` subdirectory after running `format.py` is:
