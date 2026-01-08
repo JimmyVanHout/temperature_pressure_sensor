@@ -81,9 +81,10 @@ read_temperature_pressure
 
 ## Formatting the Project Structure for esp-idf
 
-To format the project structure required for `esp-idf`, run the `format.py` Python utility located in the `utility` directory:
+To format the project structure required for `esp-idf`, change to the project directory (cloned from GitHub) if necessary and then run the `format.py` Python utility located in the `utility` directory:
 
 ```bash
+cd temperature_pressure_sensor
 python3 utility/format.py
 ```
 
@@ -123,15 +124,13 @@ To build, upload, and monitor the program:
     cd <program_directory_path>
     ```
 
-    where `<program_directory_path>` is the path to the program subdirectory, `temperature_pressure_sensor`, that was created by running `python format.py`.
+    where `<program_directory_path>` is the path to the *subdirectory*, `temperature_pressure_sensor`, that was created by running `python format.py` (note that this is different from the *project directory* that was cloned from GitHub).
 
 1. Build the program:
 
     ```bash
     idf.py build
     ```
-
-    > **Note:** If you receive an error `error: "LOG_LOCAL_LEVEL" redefined [-Werror]`, you will need to either disable errors for default warnings by running `idf.py menuconfig` and selecting `Compiler options->Disable errors for default warnings` or disable I2C debug logs by running `idf.py menuconfig` and deselecting `Component config->ESP-Driver:I2C Configurations->Enable I2C debug log`. This appears to be a [bug](https://github.com/espressif/esp-idf/issues/17877) in `esp-idf`. After saving the configuration, run `idf.py build` again.
 
 1. Upload the program to the ESP32:
 
@@ -148,6 +147,20 @@ To build, upload, and monitor the program:
     ```
 
     To exit the monitor, press `Ctrl + ]`.
+
+## Support for Multiple Sensors
+
+By default, the program supports the use of one MS5839-02BA sensor. The program also supports the use of two MS5839-02BA sensors simultaneously using multithreading, enabling the use of one task on each of the ESP32's two cores. Each task uses one of the two I2C ports available on the ESP32, ensuring high throughput. To enable support for multiple sensors simultaneously, set the desired number of I2C ports by setting `NUM_I2C_PORTS` to `2` in the following line in the `app_main` function in `main/main.c`:
+
+```c
+const uint8_t NUM_I2C_PORTS = 1; /* number of I2C ports */
+```
+
+to
+
+```c
+const uint8_t NUM_I2C_PORTS = 2; /* number of I2C ports */
+```
 
 ## Support
 
