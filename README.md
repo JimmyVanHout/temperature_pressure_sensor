@@ -14,7 +14,7 @@ This program requires the following hardware to run:
 
 ## Hardware Configuration
 
-Connect the SCL and SDA lines of the MS5839-02BA sensor to GPIO 32 and 33 of the ESP32, respectively. The GPIO ports for the SCL and SDA lines can be changed by changing the values of `I2CSettings i2c_settings.I2C_SCL_GPIO` and `I2CSettings i2c_settings.I2C_SDA_GPIO` in `main/main.c`, respectively.
+Connect the SCL and SDA lines of the MS5839-02BA sensor to GPIO 19 and 21 of the ESP32, respectively. The default GPIO pins for the SCL and SDA lines can be changed by passing the desired values to `init_i2c_settings` in `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object. See [Support for Multiple Sensors](#support-for-multiple-sensors) for more information on configuration of SCL and SDA GPIO pins when using two sensors.
 
 Consult the application circuit provided in the MS5839-02BA [datasheet](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5839-02BA&DocType=Data%20Sheet&DocLang=English&DocFormat=pdf&PartCntxt=20008669-50). The circuit contains two 10k&#x03a9; pull-up resistors on the SCL and SDA lines and a 100nF capacitor connected to VDD and GND of the sensor. On the Pressure 22 Click development board, 2 10k&#x03a9; resistors are used on the SCL and SDA lines and a 470nF capacitor is connected to VDD and GND of the sensor (see [schematic](https://download.mikroe.com/documents/add-on-boards/click/pressure_22_click/Pressure_22_click_v100_Schematic.PDF)).
 
@@ -150,17 +150,9 @@ To build, upload, and monitor the program:
 
 ## Support for Multiple Sensors
 
-By default, the program supports the use of one MS5839-02BA sensor. The program also supports the use of two MS5839-02BA sensors simultaneously using multithreading, enabling the use of one task on each of the ESP32's two cores. Each task uses one of the two I2C ports available on the ESP32, ensuring high throughput. To enable support for multiple sensors simultaneously, set the desired number of I2C ports by setting `NUM_I2C_PORTS` to `2` in the following line in the `app_main` function in `main/main.c`:
+By default, the program supports the use of one MS5839-02BA sensor. The program also supports the use of two MS5839-02BA sensors simultaneously using multithreading, enabling the use of one task on each of the ESP32's two cores. Each task uses one of the two I2C ports available on the ESP32, ensuring high throughput. To enable support for multiple sensors simultaneously, set the desired number of I2C ports by setting `NUM_I2C_PORTS` to `2` in the `app_main` function in `main/main.c`.
 
-```c
-const uint8_t NUM_I2C_PORTS = 1; /* number of I2C ports */
-```
-
-to
-
-```c
-const uint8_t NUM_I2C_PORTS = 2; /* number of I2C ports */
-```
+The default SCL and SDA GPIO pins for the first sensor are 19 and 21, respectively, and the default SCL and SDA GPIO pins for the second sensor are 22 and 23, respectively. These can be changed by modifying the `i2c_scl_gpio` and `i2c_sda_gpio` arrays in the `app_main` function in `main/main.c` or by passing the desired values to `init_i2c_settings` in `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object for each task.
 
 ## Support
 

@@ -37,11 +37,11 @@ void get_temperature_and_pressure_task(void *x) {
 
 void app_main(void) {
     const uint8_t NUM_I2C_PORTS = 1; /* number of I2C ports */
-    const uint8_t i2c_scl_gpio[2] = { /* I2C SCL GPIO ports, one for each I2C port */
+    const uint8_t i2c_scl_gpio[2] = { /* I2C SCL GPIO pins, one for each I2C port */
         19,
         22,
     };
-    const uint8_t i2c_sda_gpio[2] = { /* I2C SDA GPIO ports, one for each I2C port */
+    const uint8_t i2c_sda_gpio[2] = { /* I2C SDA GPIO pins, one for each I2C port */
         21,
         23,
     };
