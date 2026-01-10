@@ -25,11 +25,11 @@ typedef struct i2c_settings {
     uint32_t i2c_peripheral_reset; /* I2C peripheral reset command */
     uint8_t i2c_peripheral_prom_read_prefix; /* I2C peripheral PROM read command prefix */
     uint8_t i2c_max_retries; /* max number of retries after receiving error from an I2C function before restarting */
-    uint8_t i2c_retry_delay; /* delay (ms) before reattempting I2C function after receiving an error, if retries remain */
+    TickType_t i2c_retry_delay; /* delay (ms) before reattempting I2C function after receiving an error, if retries remain */
     uint8_t i2c_max_error_message_length; /* max length (char) of an I2C error message */
     uint8_t i2c_convert_pressure; /* I2C command to convert pressure from analog to digital via ADC using OSR = 4096 */
     uint8_t i2c_convert_temperature; /* I2C command to convert temperature from analog to digital via ADC using OSR = 4096 */
-    float min_adc_wait_time; /* minimum wait time for ADC conversion of pressure and temperature using OSR = 4096 */
+    TickType_t min_adc_wait_time; /* minimum wait time for ADC conversion of pressure and temperature using OSR = 4096 */
     uint8_t i2c_read_adc; /* I2C command to read uncompensated pressure or temperature data from ADC */
     bool i2c_status_messages; /* determines whether status messages should be printed to standard output (error messages will always be printed to standard error) */
 } I2CSettings;

@@ -29,7 +29,7 @@ void init_i2c_settings(I2CSettings *i2c_settings, uint8_t i2c_port, uint8_t i2c_
     i2c_settings->i2c_max_error_message_length = 100; /* max length (char) of an I2C error message */
     i2c_settings->i2c_convert_pressure = 0x48; /* I2C command to convert pressure from analog to digital via ADC using OSR = 4096 */
     i2c_settings->i2c_convert_temperature = 0x58; /* I2C command to convert temperature from analog to digital via ADC using OSR = 4096 */
-    i2c_settings->min_adc_wait_time = 8.61; /* minimum wait time (ms) for ADC conversion of pressure and temperature using OSR = 4096 */
+    i2c_settings->min_adc_wait_time = 20 / portTICK_PERIOD_MS; /* minimum wait time (ms) for ADC conversion of pressure and temperature using OSR = 4096 */
     i2c_settings->i2c_read_adc = 0; /* I2C command to read uncompensated pressure or temperature data from ADC */
     i2c_settings->i2c_status_messages = false; /* determines whether status messages should be printed to standard output (error messages will always be printed to standard error) */
 }
