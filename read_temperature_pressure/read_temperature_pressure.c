@@ -203,7 +203,7 @@ bool probe_peripheral(i2c_master_bus_handle_t i2c_bus_handle, I2CSettings *i2c_s
 }
 
 /*
-Initialize peripheral. Index 0 of the returned array consists of, from MSB to LSB: a 4 bit cyclic redundancy check value, the 7 bits 0b0100100, and 5 bit factory settings. Indexes 1 to 6 of the returned array contain the peripheral's calibration coefficients.
+Initialize peripheral. Index 0 of the returned array consists of, from MSB to LSB: a 4 bit cyclic redundancy check value, 7 bit predefined value dependent on sensor model, and 5 bit factory settings. Indexes 1 to 6 of the returned array contain the peripheral's calibration coefficients.
 
 Arguments:
     i2c_master_dev_handle_t i2c_controller_handle: handle for I2C controller
@@ -346,7 +346,7 @@ Arguments:
 Returns:
     (void) nothing
 */
-void calc_compensated_temperature_and_pressure(uint16_t *calibration_coefficients, uint32_t uncompensated_temperature, uint32_t uncompensated_pressure, double *compensated_temperature_and_pressure, I2CSettings *i2c_settings) {
+void calc_compensated_temperature_and_pressure(uint16_t *calibration_coefficients, uint32_t uncompensated_temperature, uint32_t uncompensated_pressure, double *compensated_temperature_and_pressure, I2CSettings *i2c_settings, const char *sensor_model) {
     /* first order temperature and pressure calculations */
 
     /* calculate first order temperature */
@@ -371,19 +371,25 @@ void calc_compensated_temperature_and_pressure(uint16_t *calibration_coefficient
     }
 
     /* second order temperature and pressure calculations */
-    double ti, offi, sensi;
+    double ti = 0, offi = 0, sensi = 0;
     double compensated_temperature_c = compensated_temperature / 100.0;
     double compensated_pressure_mbar = compensated_pressure / 100.0;
-    if (compensated_temperature_c > 20) {
-        ti = offi = sensi = 0;
-    } else {
-        if (compensated_temperature_c > 10) {
-            ti = 12 * pow(temp_diff, 2) / (double) 0x800000000;
-            offi = 30 * pow(compensated_temperature - 2000, 2) / (double) 0x100;
-            sensi = 0;
-        } else {
-            ti = 14 * pow(temp_diff, 2) / (double) 0x800000000;
-            offi = 35 * pow(compensated_temperature - 2000, 2) / (double) 0x8;
+    if (strcmp(sensor_model, "MS5839") == 0) { /* sensor model MS5839 */
+        if (compensated_temperature_c < 20) {
+            if (compensated_temperature_c > 10) {
+                ti = 12 * pow(temp_diff, 2) / (double) 0x800000000;
+                offi = 30 * pow(compensated_temperature - 2000, 2) / (double) 0x100;
+                sensi = 0;
+            } else {
+                ti = 14 * pow(temp_diff, 2) / (double) 0x800000000;
+                offi = 35 * pow(compensated_temperature - 2000, 2) / (double) 0x8;
+                sensi = 63 * pow(compensated_temperature - 2000, 2) / (double) 0x20;
+            }
+        }
+    } else if (strcmp(sensor_model, "MS5837") == 0) { /* sensor model MS5837 */
+        if (compensated_temperature_c < 20) {
+            ti = 11 * pow(temp_diff, 2) / (double) 0x800000000;
+            offi = 31 * pow(compensated_temperature - 2000, 2) / 8.0;
             sensi = 63 * pow(compensated_temperature - 2000, 2) / (double) 0x20;
         }
     }

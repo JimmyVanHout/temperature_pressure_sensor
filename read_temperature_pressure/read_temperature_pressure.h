@@ -27,9 +27,9 @@ typedef struct i2c_settings {
     uint8_t i2c_max_retries; /* max number of retries after receiving error from an I2C function before restarting */
     TickType_t i2c_retry_delay; /* delay (ms) before reattempting I2C function after receiving an error, if retries remain */
     uint8_t i2c_max_error_message_length; /* max length (char) of an I2C error message */
-    uint8_t i2c_convert_pressure; /* I2C command to convert pressure from analog to digital via ADC using OSR = 4096 */
-    uint8_t i2c_convert_temperature; /* I2C command to convert temperature from analog to digital via ADC using OSR = 4096 */
-    TickType_t min_adc_wait_time; /* minimum wait time for ADC conversion of pressure and temperature using OSR = 4096 */
+    uint8_t i2c_convert_pressure; /* I2C command to convert pressure from analog to digital via ADC */
+    uint8_t i2c_convert_temperature; /* I2C command to convert temperature from analog to digital via ADC */
+    TickType_t min_adc_wait_time; /* minimum wait time for ADC conversion of pressure and temperature */
     uint8_t i2c_read_adc; /* I2C command to read uncompensated pressure or temperature data from ADC */
     bool i2c_status_messages; /* determines whether status messages should be printed to standard output (error messages will always be printed to standard error) */
 } I2CSettings;
@@ -141,6 +141,6 @@ Arguments:
 Returns:
     (void) nothing
 */
-void calc_compensated_temperature_and_pressure(uint16_t *calibration_coefficients, uint32_t uncompensated_temperature, uint32_t uncompensated_pressure, double *compensated_temperature_and_pressure, I2CSettings *i2c_settings);
+void calc_compensated_temperature_and_pressure(uint16_t *calibration_coefficients, uint32_t uncompensated_temperature, uint32_t uncompensated_pressure, double *compensated_temperature_and_pressure, I2CSettings *i2c_settings, const char *sensor_model);
 
 #endif
