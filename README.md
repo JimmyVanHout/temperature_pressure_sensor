@@ -16,7 +16,7 @@ This program requires the following hardware to run:
 
 The MS5839 sensor is the default sensor used in `main/main.c`. To use a MS5837 sensor, set the `SENSOR_MODEL` array in the `app_main` function of `main/main.c` to `"MS5837"`.
 
-Connect the SCL and SDA lines of the sensor to GPIO pins 19 and 21 of the ESP32, respectively. The default GPIO pins for the SCL and SDA lines can be changed by modifying the `i2c_scl_gpio` and `i2c_sda_gpio` arrays in the `app_main` function of `main/main.c` or by passing the desired values to `init_i2c_settings` in `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object in `main/main.c`. See [Support for Multiple Sensors](#support-for-using-multiple-sensors-simultaneously) for more information on configuration of SCL and SDA GPIO pins when using two sensors.
+Connect the SCL and SDA lines of the sensor to GPIO pins 19 and 21 of the ESP32, respectively. The default GPIO pins for the SCL and SDA lines can be changed by modifying the `i2c_scl_gpio` and `i2c_sda_gpio` arrays in the `app_main` function of `main/main.c` or by passing the desired values to `init_i2c_settings` in `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object in `main/main.c`. See [Support for Using Multiple Sensors Simultaneously](#support-for-using-multiple-sensors-simultaneously) for more information on configuration of SCL and SDA GPIO pins when using two sensors.
 
 Default I2C settings are contained in `typedef struct i2c_settings I2CSettings` in `read_temperature_pressure/read_temperature_pressure.c`. These settings, which include the I2C SCL line frequency and minimum ADC wait time, can be changed as needed by passing the desired values to `init_i2c_settings` in `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object in `main/main.c`.
 
@@ -32,25 +32,25 @@ The `utility` directory contains a Python module `calculate_pull_up_resistance` 
 
 The minimum pull-up resistance is:
 
-$$
+```math
 R_{min} = \dfrac{V_{CC} - V_{OL\_max}}{I_{OL}}
-$$
+```
 
-where $R_{min}$ is the minimum pull-up resistance (&#x03a9;), $V_{CC}$ is the power supply voltage (V), $V_{OL\_max}$ is the maximum low-level output voltage (V), and $I_{OL}$ is the low-level output (sink) current (A).
+where $`R_{min}`$ is the minimum pull-up resistance (&#x03a9;), $`V_{CC}`$ is the power supply voltage (V), $`V_{OL\_max}`$ is the maximum low-level output voltage (V), and $`I_{OL}`$ is the low-level output (sink) current (A).
 
-For example, using $V_{CC} = 3.3\text{V}$, $V_{OL\_max} = 0.1 \times 3.3\text{V} = 0.33\text{V}$, and $I_{OL} = 0.028\text{A}$, $R_{min} = 106\Omega$.
+For example, using $`V_{CC} = 3.3\text{V}`$, $`V_{OL\_max} = 0.1 \times 3.3\text{V} = 0.33\text{V}`$, and $`I_{OL} = 0.028\text{A}`$, $`R_{min} = 106\Omega`$.
 
 #### Maximum Pull-Up Resistance Calculation
 
 The maximum pull-up resistance is:
 
-$$
+```math
 R_{max} = \dfrac{t_r}{c \times \ln\left(\dfrac{V_{CC} - V_{IL\_max}}{V_{CC} - V_{IH\_min}}\right)}
-$$
+```
 
-where $R_{max}$ is the maximum pull-up resistance (&#x03a9;), $t_r$ is the I2C rise time from maximum low-level input voltage to minimum high-level input voltage (s), $c$ is the bus capacitace for each I2C line (F), $V_{CC}$ is the power supply voltage (V), $V_{IL\_max}$ is the maximum low-level input voltage (V), and $V_{IH\_min}$ is the minimum high-level input voltage (V).
+where $`R_{max}`$ is the maximum pull-up resistance (&#x03a9;), $`t_r`$ is the I2C rise time from maximum low-level input voltage to minimum high-level input voltage (s), $`c`$ is the bus capacitace for each I2C line (F), $`V_{CC}`$ is the power supply voltage (V), $`V_{IL\_max}`$ is the maximum low-level input voltage (V), and $`V_{IH\_min}`$ is the minimum high-level input voltage (V).
 
-For example, using $t_r = 1 \times 10^{-6}\text{s}$, $c = 50 \times 10^{-12}\text{F}$, $V_{CC} = 3.3\text{V}$, $V_{IL\_max} = 0.25 \times 3.3\text{V} = 0.825\text{V}$, and $V_{IH\_min} = 0.75 \times 3.3\text{V} = 2.5\text{V}$, $R_{max} = 18\text{k}\Omega$.
+For example, using $`t_r = 1 \times 10^{-6}\text{s}`$, $`c = 50 \times 10^{-12}\text{F}`$, $`V_{CC} = 3.3\text{V}`$, $`V_{IL\_max} = 0.25 \times 3.3\text{V} = 0.825\text{V}`$, and $`V_{IH\_min} = 0.75 \times 3.3\text{V} = 2.5\text{V}`$, $`R_{max} = 18\text{k}\Omega`$.
 
 ## Software Installation
 
