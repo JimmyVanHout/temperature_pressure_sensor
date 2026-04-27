@@ -16,7 +16,7 @@ if __name__ == "__main__":
         raise ValueError("Cannot specify --component-only with --main")
     if arguments["dir"]:
         os.chdir(arguments["dir"])
-    if "utility" == os.path.split(os.getcwd())[1]:
+    elif "utility" == os.path.split(os.getcwd())[1]:
         os.chdir("..")
     
     # copy files to new directory with format expected by ESP IDF

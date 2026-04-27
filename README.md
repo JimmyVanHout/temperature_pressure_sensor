@@ -158,6 +158,63 @@ By default, the program supports the use of one MS5837 or MS5839 sensor. The pro
 
 The default SCL and SDA GPIO pins for the first sensor are 19 and 21, respectively, and the default SCL and SDA GPIO pins for the second sensor are 22 and 23, respectively. These can be changed by modifying the `i2c_scl_gpio` and `i2c_sda_gpio` arrays in the `app_main` function of `main/main.c` or by passing the desired values to `init_i2c_settings` in `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object for each task in `main/main.c`.
 
+## Logging
+
+Temperature and pressure data can be read from the serial output of the microcontroller and logged to a CSV file and SQLite database by running the `utility/log.py` program on the connected computer.
+
+### Dependencies
+
+First, change to the `utility` directory within the project directory. Then, create the virtual environment (if necessary) and activate it. Finally, install the required dependencies:
+
+```bash
+cd <project_directory>/utility
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Usage
+
+Run:
+
+```bash
+python3 utility/log.py -d <dir_path> -m <mcu_id> -p <port> -b <baud_rate>
+```
+
+The `log.py` utility takes the following command-line options, most of which are required:
+
+`-d <dir_path>` or `--dir <dir_path>`: (optional) an option specifying the path `<dir_path>` to the directory to change to before executing the program. If you specify a directory using this option, the `data` directory containing the data log and database will be saved there. Otherwise, the `data` directory will be saved in the project directory by default.
+
+`-m <mcu_id>` or `--mcu-id <mcu_id>`: (required) an option specifying an identifier `<mcu_id>` for the microcontroller from which data will be logged. This identifier must be either 0 or 1. If only one microcontroller is used, it must be assigned the identifier 0.
+
+`-p <port>` or `--port <port>`: (required) an option specifying the port `<port>` on which the microcontroller is connected.
+
+`-b <baud_rate>` or `--baud-rate <baud_rate>`: (required) an option specifying the baud rate `<baud_rate>`.
+
+Up to two microcontrollers (each with a different identifier) can be used simultaneously, with each using up to two I2C ports. Each microcontroller's output is logged to the same database but separate CSV files.
+
+The CSV file will be named `data_mcu_id_<mcu_id>.csv` for each microcontroller identifier and will be saved in a directory named `data` along with the database `data.db`. The default location for the `data` directory is the project directory, but this can be changed using the `-d` option as noted above.
+
+### Examples
+
+For example, to log data from one microcontroller (using up to two sensors, each on a separate I2C port) using port `/dev/ttyUSB0` and baud rate `115200`, run:
+
+```bash
+python3 utility/log.py -m 0 -p /dev/ttyUSB0 -b 115200
+```
+
+As another example, to log data from two microcontrollers (using up to two sensors each), with one microcontroller using port `/dev/ttyUSB0` and baud rate `115200` and the other microcontroller using port `/dev/ttyUSB1` and baud rate `115200`, in one terminal run:
+
+```bash
+python3 utility/log.py -m 0 -p /dev/ttyUSB0 -b 115200
+```
+
+and in another terminal run:
+
+```bash
+python3 utility/log.py -m 1 -p /dev/ttyUSB1 -b 115200
+```
+
 ## Support
 
 Please open an [Issue](https://github.com/JimmyVanHout/temperature_pressure_sensor/issues) for support.

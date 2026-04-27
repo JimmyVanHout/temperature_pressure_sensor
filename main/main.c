@@ -10,6 +10,7 @@ typedef struct task_parameters {
     I2CSettings *i2c_settings;
     i2c_master_dev_handle_t *i2c_controller_handle;
     uint16_t *calibration_coefficients;
+    uint8_t mcu_id;
     char sensor_model[7];
 } TaskParameters;
 
@@ -26,6 +27,7 @@ void get_temperature_and_pressure_task(void *x) {
     I2CSettings *i2c_settings = task_parameters->i2c_settings;
     i2c_master_dev_handle_t *i2c_controller_handle = task_parameters->i2c_controller_handle;
     uint16_t *calibration_coefficients = task_parameters->calibration_coefficients;
+    uint8_t mcu_id = task_parameters->mcu_id;
     char *sensor_model = task_parameters->sensor_model;
     uint32_t uncompensated_temperature_and_pressure[2]; /* array containing the uncompensated temperature and pressure values */
     double compensated_temperature_and_pressure[2]; /* array containing the compensated temperature and pressure values */
@@ -33,12 +35,13 @@ void get_temperature_and_pressure_task(void *x) {
     while (true) {
         read_uncompensated_temperature_and_pressure(*i2c_controller_handle, uncompensated_temperature_and_pressure, i2c_settings); /* read uncompensated temperature and pressure */
         calc_compensated_temperature_and_pressure(calibration_coefficients, uncompensated_temperature_and_pressure[0], uncompensated_temperature_and_pressure[1], compensated_temperature_and_pressure, i2c_settings, sensor_model); /* calculate the compensated temperature and pressure */
-        printf("I2C port, compensated temperature (degrees C), compensated pressure (mbar): %hhu, %lf, %lf\n", i2c_settings->i2c_port, compensated_temperature_and_pressure[0], compensated_temperature_and_pressure[1]);
+        printf("MCU ID, I2C port, compensated temperature (degrees C), compensated pressure (mbar): %hhu, %hhu, %lf, %lf\n", mcu_id, i2c_settings->i2c_port, compensated_temperature_and_pressure[0], compensated_temperature_and_pressure[1]);
     }
 }
 
 void app_main(void) {
     const uint8_t NUM_I2C_PORTS = 1; /* number of I2C ports */
+    const uint8_t MCU_ID = 0; /* microcontroller identifier */
     const char SENSOR_MODEL[7] = "MS5839"; /* sensor model code */
     const uint8_t i2c_scl_gpio[2] = { /* I2C SCL GPIO pins, one for each I2C port */
         19,
@@ -62,7 +65,7 @@ void app_main(void) {
         while (true) {
             read_uncompensated_temperature_and_pressure(i2c_controller_handle, uncompensated_temperature_and_pressure, &i2c_settings); /* read uncompensated temperature and pressure */
             calc_compensated_temperature_and_pressure(calibration_coefficients, uncompensated_temperature_and_pressure[0], uncompensated_temperature_and_pressure[1], compensated_temperature_and_pressure, &i2c_settings, SENSOR_MODEL); /* calculate the compensated temperature and pressure */
-            printf("compensated temperature (degrees C), compensated pressure (mbar): %lf, %lf\n", compensated_temperature_and_pressure[0], compensated_temperature_and_pressure[1]);
+            printf("MCU ID, I2C port, compensated temperature (degrees C), compensated pressure (mbar): %hhu, %hhu, %lf, %lf\n", MCU_ID, i2c_settings.i2c_port, compensated_temperature_and_pressure[0], compensated_temperature_and_pressure[1]);
         }
     } else { /* create two tasks, one per core */
         I2CSettings i2c_settings[2]; /* array of I2CSettings objects, one for each core, initialized with the I2C settings specific to that core */
@@ -85,6 +88,7 @@ void app_main(void) {
             task_parameters[i].i2c_settings = &i2c_settings[i];
             task_parameters[i].i2c_controller_handle = &i2c_controller_handles[i];
             task_parameters[i].calibration_coefficients = calibration_coefficients[i];
+            task_parameters[i].mcu_id = MCU_ID;
             strcpy(task_parameters[i].sensor_model, SENSOR_MODEL);
             xTaskCreatePinnedToCore(get_temperature_and_pressure_task, task_name, TASK_STACK_SIZE, (void *) &task_parameters[i], TASK_PRIORITY, NULL, i);
         }
