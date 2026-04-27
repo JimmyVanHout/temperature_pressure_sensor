@@ -191,7 +191,7 @@ The `log.py` utility takes the following command-line options, most of which are
 
 `-b <baud_rate>` or `--baud-rate <baud_rate>`: (required) an option specifying the baud rate `<baud_rate>`.
 
-Up to two microcontrollers (each with a different identifier) can be used simultaneously, with each using up to two I2C ports. Each microcontroller's output is logged to the same database but separate CSV files.
+Serial data from up to two microcontrollers (each with a different identifier and each using up to two I2C ports) can be logged simultaneously using two processes on a connected computer. Each microcontroller's output is logged to the same database but separate CSV files.
 
 The CSV file will be named `data_mcu_id_<mcu_id>.csv` for each microcontroller identifier and will be saved in a directory named `data` along with the database `data.db`. The default location for the `data` directory is the project directory, but this can be changed using the `-d` option as noted above.
 

@@ -264,8 +264,7 @@ if __name__ == "__main__":
         print(f"Connected to port {serial_connection.name}")
         while True:
             data = read_line_from_serial(serial_connection)
-            if data:
+            if data and data["mcu_id"] == mcu_id:
                 log_data_to_db(db_connection, db_cursor, data)
-                if data["mcu_id"] == mcu_id:
-                    log_data_to_csv(csv_writer, data)
+                log_data_to_csv(csv_writer, data)
                 print(data_to_str(data, borders=True))
