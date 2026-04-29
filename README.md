@@ -217,6 +217,35 @@ and in another terminal run:
 python3 utility/log.py -m 1 -p /dev/ttyUSB1 -b 115200
 ```
 
+## Graphing
+
+Temperature and pressure data can be graphed in a web browser after it has been logged using `log.py`.
+
+### Dependencies
+
+First, change to the `utility` directory within the project directory. Then, create the virtual environment (if necessary) and activate it. Finally, install the required dependencies:
+
+```bash
+cd <project_directory>/utility
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Usage
+
+Run:
+
+```python
+python3 graph.py -p <port>
+```
+
+The command accepts the following arguments:
+
+`-p` or `--port`: (optional) specify the port on which the web browser should listen on `localhost` (default is `8000`).
+
+A web browser will be launched listening to `localhost` on port `8000` by default. This port can be changed using the `-p` option.
+
 ## Set Up and Use on Non-GNU/Linux Systems
 
 ### MacOS

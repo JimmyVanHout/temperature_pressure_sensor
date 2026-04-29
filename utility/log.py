@@ -1,9 +1,9 @@
 """
-# Temperature and Pressure Data Logger
+# Temperature and Pressure Data Logging Utility
 
 Temperature and pressure data can be read from the serial output of the microcontroller and logged to a CSV file and SQLite database by running the `utility/log.py` program on the connected computer.
 
-### Dependencies
+## Dependencies
 
 First, change to the `utility` directory within the project directory. Then, create the virtual environment (if necessary) and activate it. Finally, install the required dependencies:
 
@@ -14,7 +14,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Usage
+## Usage
 
 Run:
 
@@ -36,7 +36,7 @@ Up to two microcontrollers (each with a different identifier) can be used simult
 
 The CSV file will be named `data_mcu_id_<mcu_id>.csv` for each microcontroller identifier and will be saved in a directory named `data` along with the database `data.db`. The default location for the `data` directory is the project directory, but this can be changed using the `-d` option as noted above.
 
-### Examples
+## Examples
 
 For example, to log data from one microcontroller (using up to two sensors, each on a separate I2C port) using port `/dev/ttyUSB0` and baud rate `115200`, run:
 
@@ -139,46 +139,45 @@ def init_db(db_connection):
         db_connection: the sqlite3 database connection object
 
     Return:
-        the sqlite3 database connection cursor
+        nothing
     """
-    cursor = db_connection.cursor()
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS serial_data (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            date_time TEXT,
-            mcu_id INTEGER,
-            i2c_port INTEGER,
-            compensated_temperature REAL,
-            compensated_pressure REAL
-        );
-        """
-    )
-    db_connection.commit()
-    return cursor
+    with contextlib.closing(db_connection.cursor()) as db_cursor:
+        db_cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS serial_data (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date_time TEXT,
+                mcu_id INTEGER,
+                i2c_port INTEGER,
+                compensated_temperature REAL,
+                compensated_pressure REAL
+            );
+            """
+        )
+        db_connection.commit()
 
-def log_data_to_db(db_connection, db_cursor, data):
+def log_data_to_db(db_connection, data):
     """
     Log serial data to a SQLite database.
 
     Arguments:
         db_connection: the database connection object returned by sqlite3.connect
-        db_cursor: the database cursor object returned by sqlite3.cursor
         data: a dictionary containing the serial data
     """
-    db_cursor.execute(
-        """
-        INSERT INTO serial_data (date_time, mcu_id, i2c_port, compensated_temperature, compensated_pressure) VALUES (?, ?, ?, ?, ?);
-        """,
-        (
-            data["date_time"],
-            data["mcu_id"],
-            data["i2c_port"],
-            data["compensated_temperature"],
-            data["compensated_pressure"],
+    with contextlib.closing(db_connection.cursor()) as db_cursor:
+        db_cursor.execute(
+            """
+            INSERT INTO serial_data (date_time, mcu_id, i2c_port, compensated_temperature, compensated_pressure) VALUES (?, ?, ?, ?, ?);
+            """,
+            (
+                data["date_time"],
+                data["mcu_id"],
+                data["i2c_port"],
+                data["compensated_temperature"],
+                data["compensated_pressure"],
+            )
         )
-    )
-    db_connection.commit()
+        db_connection.commit()
 
 def init_csv(csv_file_path):
     """
@@ -259,12 +258,12 @@ if __name__ == "__main__":
         contextlib.closing(sqlite3.connect(db_file_path)) as db_connection,
         open(csv_file_path, "a+") as csv_file,
     ):
-        db_cursor = init_db(db_connection)
+        init_db(db_connection)
         csv_writer = csv.writer(csv_file)
         print(f"Connected to port {serial_connection.name}")
         while True:
             data = read_line_from_serial(serial_connection)
             if data and data["mcu_id"] == mcu_id:
-                log_data_to_db(db_connection, db_cursor, data)
+                log_data_to_db(db_connection, data)
                 log_data_to_csv(csv_writer, data)
                 print(data_to_str(data, borders=True))
