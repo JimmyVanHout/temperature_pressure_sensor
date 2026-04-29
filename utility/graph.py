@@ -29,6 +29,7 @@ The command accepts the following arguments:
 A web browser will be launched listening to `localhost` on port `8000` by default. This port can be changed using the `-p` option.
 """
 
+import argparse
 import contextlib
 import flask
 import os
