@@ -1,24 +1,26 @@
-# Temperature and Pressure Sensor
+# Temperature and Pressure Sensor Firmware and Utility
 
-This program reads temperature and pressure from a MS5837 or MS5839 sensor via I2C with an ESP32 microcontroller and outputs the data over serial.
+This software reads temperature and pressure from a MS5837 or MS5839 sensor via I2C with an ESP32 microcontroller and outputs the data over serial.
+
+Though many of the features of this software can be used on [MacOS](#macos) or [Windows](#windows), this software has primarily been tested on GNU/Linux systems and this guide is oriented primarily toward these systems.
 
 ## Hardware Requirements
 
-This program requires the following hardware to run:
+This software requires the following hardware to run:
 
-* **A computer**. This program was tested on a [Raspberry Pi 4](https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-datasheet.pdf) (ARM64) running [Raspberry Pi OS](https://www.raspberrypi.com/software/operating-systems/) based on [Debian 12](https://www.debian.org/releases/bookworm/).
+* **A computer**. This software was tested on a [Raspberry Pi 4](https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-datasheet.pdf) (ARM64) running [Raspberry Pi OS](https://www.raspberrypi.com/software/operating-systems/) (based on [Debian 12](https://www.debian.org/releases/bookworm/)), a x86-64 (AMD64) computer running [Debian 13](https://www.debian.org/releases/trixie/), and a x86-64 (AMD64) computer running Windows 11.
 
-* **An ESP32 microcontroller.** This program was tested on an [Espressif ESP32-WROOM-32](https://documentation.espressif.com/esp32-wroom-32_datasheet_en.pdf) microcontroller (MCU) mounted on an [Inland ESP32](https://community.microcenter.com/kb/articles/652-inland-esp32-core-board-black-and-eco-friendly) development board and an [Espressif ESP32-WROOM-32E](https://documentation.espressif.com/esp32-wroom-32e_esp32-wroom-32ue_datasheet_en.pdf) MCU mounted on an [Espressif ESP32 DevKitC](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-devkitc/index.html) development board.
+* **An ESP32 microcontroller.** This software was tested on an [Espressif ESP32-WROOM-32](https://documentation.espressif.com/esp32-wroom-32_datasheet_en.pdf) microcontroller (MCU) mounted on an [Inland ESP32](https://community.microcenter.com/kb/articles/652-inland-esp32-core-board-black-and-eco-friendly) development board and an [Espressif ESP32-WROOM-32E](https://documentation.espressif.com/esp32-wroom-32e_esp32-wroom-32ue_datasheet_en.pdf) MCU mounted on an [Espressif ESP32 DevKitC](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-devkitc/index.html) development board.
 
-* **A MS5837 or MS5839 temperature and pressure sensor**. This program was tested on [TE Connectivity MS5837-02BA](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5837-02BA01&DocType=Data%20Sheet&DocLang=English&DocFormat=pdf&PartCntxt=20000979-00) and [TE Connectivity MS5839-02BA](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5839-02BA&DocType=Data%20Sheet&DocLang=English&DocFormat=pdf&PartCntxt=20008669-50) temperature and pressure sensors, with the MS5839 sensor mounted on a [Mikroe Pressure 22 Click](https://www.mikroe.com/pressure-22-click?srsltid=AfmBOoqSizi4NoiV8QF_MCegA7pMt5wmre6OOaNLoXm300nrrdypXcyi) development board.
+* **A MS5837 or MS5839 temperature and pressure sensor**. This software was tested on [TE Connectivity MS5837-02BA](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5837-02BA01&DocType=Data%20Sheet&DocLang=English&DocFormat=pdf&PartCntxt=20000979-00) and [TE Connectivity MS5839-02BA](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5839-02BA&DocType=Data%20Sheet&DocLang=English&DocFormat=pdf&PartCntxt=20008669-50) temperature and pressure sensors, with the MS5839 sensor mounted on a [Mikroe Pressure 22 Click](https://www.mikroe.com/pressure-22-click?srsltid=AfmBOoqSizi4NoiV8QF_MCegA7pMt5wmre6OOaNLoXm300nrrdypXcyi) development board.
 
 ## Hardware Configuration
 
 The MS5839 sensor is the default sensor used in `main/main.c`. To use a MS5837 sensor, set the `SENSOR_MODEL` array in the `app_main` function of `main/main.c` to `"MS5837"`.
 
-Connect the SCL and SDA lines of the sensor to GPIO pins 19 and 21 of the ESP32, respectively. The default GPIO pins for the SCL and SDA lines can be changed by modifying the `i2c_scl_gpio` and `i2c_sda_gpio` arrays in the `app_main` function of `main/main.c` or by passing the desired values to `init_i2c_settings` in `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object in `main/main.c`. See [Support for Using Multiple Sensors Simultaneously](#support-for-using-multiple-sensors-simultaneously) for more information on configuration of SCL and SDA GPIO pins when using two sensors.
+Connect the SCL and SDA lines of the sensor to GPIO pins 19 and 21 of the ESP32, respectively. The default GPIO pins for the SCL and SDA lines can be changed by modifying the `i2c_scl_gpio` and `i2c_sda_gpio` arrays in the `app_main` function of `main/main.c`, by passing the desired values to the `init_i2c_settings` function of `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object in `main/main.c`, or by creating an `I2CSettings` object directly (without using `init_i2c_settings`) with the desired values. See [Support for Using Multiple Sensors Simultaneously](#support-for-using-multiple-sensors-simultaneously) for more information on configuration of SCL and SDA GPIO pins when using two sensors.
 
-Default I2C settings are contained in `typedef struct i2c_settings I2CSettings` in `read_temperature_pressure/read_temperature_pressure.c`. These settings, which include the I2C SCL line frequency and minimum ADC wait time, can be changed as needed by passing the desired values to `init_i2c_settings` in `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object in `main/main.c`.
+The default I2C settings are set in the definition of the `I2CSettings` object in the `init_i2c_settings` function of `read_temperature_pressure/read_temperature_pressure.c`. These settings, which include the I2C SCL line frequency and minimum ADC wait time, can be changed as needed by passing the desired values to the `init_i2c_settings` function of `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object in `main/main.c`.
 
 Consult the application circuit provided in the [MS5837](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5837-02BA01&DocType=Data%20Sheet&DocLang=English&DocFormat=pdf&PartCntxt=20000979-00) or [MS5839](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=srchrtrv&DocNm=MS5839-02BA&DocType=Data%20Sheet&DocLang=English&DocFormat=pdf&PartCntxt=20008669-50) sensor datasheets. The circuit contains two 10k&#x03a9; pull-up resistors on the SCL and SDA lines and a 100nF capacitor connected to VDD and GND of the sensor. If using a MS5839 sensor mounted to a Mikroe Pressure 22 Click development board, note that a 470nF capacitor is connected to VDD and GND of the sensor (see [schematic](https://download.mikroe.com/documents/add-on-boards/click/pressure_22_click/Pressure_22_click_v100_Schematic.PDF)).
 
@@ -58,15 +60,15 @@ For example, using $`t_r = 1 \times 10^{-6}\text{s}`$, $`c = 50 \times 10^{-12}\
 
 `esp-idf` is required to build the program, upload it to the ESP32, and monitor the serial output. For information on installing `esp-idf`, see the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/).
 
-### Temperature and Pressure Program Installation
+### Firmware and Utility Installation
 
-To install the temperature and pressure sensor program and related files, clone the repository from GitHub:
+To install the temperature and pressure sensor firmware and utility programs, clone the repository from GitHub:
 
 ```bash
 git clone git@github.com:JimmyVanHout/temperature_pressure_sensor.git
 ```
 
-The program and related files will be located in the `temperature_pressure_sensor` directory. Some of the files within this directory include the following:
+The firmware and utility programs will be located in the `temperature_pressure_sensor` directory. Some of the files within this directory include the following:
 
 ```
 CMakeLists
@@ -92,7 +94,7 @@ cd temperature_pressure_sensor
 python3 utility/format.py
 ```
 
-The `format.py` program will create a new subdirectory `temperature_pressure_sensor` within the project directory (which is also named `temperature_pressure_sensor`) containing the proper project structure required by `esp-idf`. For example, the default file structure within the newly created `temperature_pressure_sensor` subdirectory after running `format.py` is:
+The `format.py` program will create a new subdirectory called `temperature_pressure_sensor` within the project directory (note that the project directory is *also* named `temperature_pressure_sensor`) containing the proper project structure required by `esp-idf`. For example, the default file structure within the newly created `temperature_pressure_sensor` subdirectory after running `format.py` is:
 
 ```
 CMakeLists.txt                              # copied from CMakeLists/root/CMakeLists.txt
@@ -110,15 +112,13 @@ main
 
 The `format.py` program takes the following command-line options:
 
-`-d <path_to_directory>` or `--dir <path_to_directory>`: Specify the location of the project directory (by default named `temperature_pressure_sensor` when cloned from GitHub), where `<path_to_directory>` is the path to the project directory. If `-d` or `--dir` is not specified, then the current directory is assumed to be the project directory, unless the program is run from within the `utility` subdirectory in which case the `format.py` program will change to the parent (the project directory) automatically for convenience. The `-d` or `--dir` options are useful for running the `format.py` command from another directory outside of the project directory.
+`-d <path_to_directory>` or `--dir <path_to_directory>`: Specify the location of the project directory (by default named `temperature_pressure_sensor` when cloned from GitHub), where `<path_to_directory>` is the path to the project directory. If `-d` or `--dir` is not specified, then the current directory is assumed to be the project directory, unless the program is run from within the `utility` subdirectory in which case the `format.py` program will change to the parent directory (the project directory) automatically for convenience. The `-d` or `--dir` options are useful for running the `format.py` command from another directory outside of the project directory.
 
 `-c` or `--component-only`: Only create the `read_temperature_pressure` component and the necessary `CMakeLists.txt` files, do not create `main`, `main/main.c`, or `main/CMakeLists.txt`. This is useful for incorporating the `read_temperature_pressure` component into an existing project. The `-c` and `--component-only` options cannot be used with the `-m` or `--main` options.
 
-`-m <path_to_main>` or `--main <path_to_main>`: Specify the location of the main source file to be compiled and executed. The default is `main/main.c`. This is useful for building, uploading, and monitoring unit tests. For example, the `-m` or `--main` flag can be used to copy a unit test file `tests/main/test_main.c` to `main` so that it will be compiled and executed as the main executable on the ESP32 after the build and upload process. The `-m` and `--main` options cannot be used with the `-c` or `--component-only` options.
+`-m <path_to_main>` or `--main <path_to_main>`: Specify the location of the main source file to be compiled and executed. The default is `main/main.c`. This is useful for building, uploading, and monitoring unit tests. For example, the `-m` or `--main` flag can be used to copy a unit test file in the project directory to the `main` directory in the `temperature_pressure_sensor` directory created by `format.py` so that the unit test will be compiled and executed as the main executable on the ESP32 after the build and upload process. The `-m` and `--main` options cannot be used with the `-c` or `--component-only` options.
 
 ## Building, Uploading, and Monitoring the Program
-
-For further information on building, uploading, and monitoring the program using `esp-idf`, see the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/).
 
 To build, upload, and monitor the program:
 
@@ -128,7 +128,7 @@ To build, upload, and monitor the program:
     cd <program_directory_path>
     ```
 
-    where `<program_directory_path>` is the path to the *subdirectory*, `temperature_pressure_sensor`, that was created by running `python format.py` (note that this is different from the *project directory* that was cloned from GitHub).
+    where `<program_directory_path>` is the path to the *subdirectory*, `temperature_pressure_sensor`, that was created by running `python3 format.py` (again note that this is different from the *project directory* that was cloned from GitHub).
 
 1. Build the program:
 
@@ -142,7 +142,7 @@ To build, upload, and monitor the program:
     idf.py -p <port> -b <baud_rate> flash
     ```
 
-    where `<port>` is an optional argument specifying the port on which the ESP32 is connected and `baud_rate` is an optional argument specifying the baud rate. See the [documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/establish-serial-connection.html#connect-esp32-to-pc) for more information.
+    where `<port>` is an optional argument specifying the port on which the ESP32 is connected and `baud_rate` is an optional argument specifying the baud rate. See the [documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/establish-serial-connection.html#connect-esp32-to-pc) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/#build-flash-and-monitor-the-program) for more information.
 
 1. Monitor the output of the program over serial:
 
@@ -152,11 +152,13 @@ To build, upload, and monitor the program:
 
     To exit the monitor, press `Ctrl + ]`.
 
+For additional information on building, uploading, and monitoring the program using `esp-idf`, see the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html) and [this guide](https://www.jimmyvanhout.com/docs/run_program_on_esp32/).
+
 ## Support for Using Multiple Sensors Simultaneously
 
-By default, the program supports the use of one MS5837 or MS5839 sensor. The program also supports the use of two sensors of the same type simultaneously using multithreading, enabling the use of one task on each of the ESP32's two cores. Each task uses one of the two I2C ports available on the ESP32, ensuring high throughput. To enable support for multiple sensors simultaneously, set the desired number of I2C ports by setting `NUM_I2C_PORTS` to `2` in the `app_main` function of `main/main.c`.
+By default, the firmware supports the use of one MS5837 or MS5839 sensor. The firmware also supports the use of two sensors of the same type simultaneously using multithreading, enabling the use of one task on each of the ESP32's two cores. Each task uses one of the two I2C ports available on the ESP32, allowing for higher throughput. To enable support for multiple sensors simultaneously, set the desired number of I2C ports by setting `NUM_I2C_PORTS` to `2` in the `app_main` function of `main/main.c`.
 
-The default SCL and SDA GPIO pins for the first sensor are 19 and 21, respectively, and the default SCL and SDA GPIO pins for the second sensor are 22 and 23, respectively. These can be changed by modifying the `i2c_scl_gpio` and `i2c_sda_gpio` arrays in the `app_main` function of `main/main.c` or by passing the desired values to `init_i2c_settings` in `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object for each task in `main/main.c`.
+The default SCL and SDA GPIO pins for the first sensor are 19 and 21, respectively, and the default SCL and SDA GPIO pins for the second sensor are 22 and 23, respectively. These can be changed by modifying the `i2c_scl_gpio` and `i2c_sda_gpio` arrays in the `app_main` function of `main/main.c`, by passing the desired values to the `init_i2c_settings` function of `read_temperature_pressure/read_temperature_pressure.c` when initializing an `I2CSettings` object for each task in `main/main.c`, or by creating an `I2CSettings` object directly (without using `init_i2c_settings`) with the desired values for each task.
 
 ## Logging
 
@@ -214,6 +216,16 @@ and in another terminal run:
 ```bash
 python3 utility/log.py -m 1 -p /dev/ttyUSB1 -b 115200
 ```
+
+## Set Up and Use on Non-GNU/Linux Systems
+
+### MacOS
+
+Aside from the installation of ESP-IDF, most of this guide is applicable to MacOS. See the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/macos-setup.html) for installation of ESP-IDF on MacOS.
+
+### Windows
+
+See the [official documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/windows-setup.html) for installation of ESP-IDF on Windows 11, and please see this [guide](https://gist.github.com/JimmyVanHout/6a982df871cf4748bda9aba4fa062c03) for overall setup and use of this software on Windows 11.
 
 ## Support
 
