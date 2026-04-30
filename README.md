@@ -180,7 +180,7 @@ pip install -r requirements.txt
 Run:
 
 ```bash
-python3 utility/log.py -d <dir_path> -m <mcu_id> -p <port> -b <baud_rate>
+python3 log.py -d <dir_path> -m <mcu_id> -p <port> -b <baud_rate>
 ```
 
 The `log.py` utility takes the following command-line options, most of which are required:
@@ -202,24 +202,24 @@ The CSV file will be named `data_mcu_id_<mcu_id>.csv` for each microcontroller i
 For example, to log data from one microcontroller (using up to two sensors, each on a separate I2C port) using port `/dev/ttyUSB0` and baud rate `115200`, run:
 
 ```bash
-python3 utility/log.py -m 0 -p /dev/ttyUSB0 -b 115200
+python3 log.py -m 0 -p /dev/ttyUSB0 -b 115200
 ```
 
 As another example, to log data from two microcontrollers (using up to two sensors each), with one microcontroller using port `/dev/ttyUSB0` and baud rate `115200` and the other microcontroller using port `/dev/ttyUSB1` and baud rate `115200`, in one terminal run:
 
 ```bash
-python3 utility/log.py -m 0 -p /dev/ttyUSB0 -b 115200
+python3 log.py -m 0 -p /dev/ttyUSB0 -b 115200
 ```
 
 and in another terminal run:
 
 ```bash
-python3 utility/log.py -m 1 -p /dev/ttyUSB1 -b 115200
+python3 log.py -m 1 -p /dev/ttyUSB1 -b 115200
 ```
 
 ## Graphing
 
-Temperature and pressure data can be graphed in a web browser after it has been logged using `log.py`.
+Temperature and pressure data can be graphed in a web browser using `utility/graph.py` after it has been logged using `utility/log.py`.
 
 ### Dependencies
 
@@ -244,7 +244,7 @@ The command accepts the following arguments:
 
 `-p` or `--port`: (optional) specify the port on which the web browser should listen on `localhost` (default is `8000`).
 
-A web browser will be launched listening to `localhost` on port `8000` by default. This port can be changed using the `-p` option.
+A web browser will be launched listening to `localhost` on port `8000` by default. This port can be changed using the `-p` option. The graphing utility reads data from the `data/data.db` database and updates the graph with the most recent data at a rate of 10Hz. Ensure that `utility/log.py` is running as a separate process so that new data can be logged to the database and then read by the graphing utility.
 
 ## Set Up and Use on Non-GNU/Linux Systems
 
